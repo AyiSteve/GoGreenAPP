@@ -1,6 +1,5 @@
-// app/wallet.tsx
-import React, { memo } from "react";
-import { View, Text, Pressable, FlatList } from "react-native";
+import React, { memo, useEffect, useState } from "react";
+import { View, Text, Pressable, FlatList, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
@@ -8,6 +7,8 @@ const BG = "#F2E6B8";
 const INK = "#0F172A";
 const MUTED = "#6B7280";
 const DIVIDER = "#D4D4D4";
+
+const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
 
 type Txn = { id: string; title: string; amount: number; date: string };
 
@@ -23,9 +24,28 @@ const Divider = memo(() => (
 export default function Wallet() {
   const router = useRouter();
 
+  const [points, setPoints] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Load points from backend JSON
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/me`);
+        if (!res.ok) throw new Error("Failed to fetch points");
+        const data = await res.json();
+        setPoints(typeof data.points === "number" ? data.points : 0);
+      } catch (e) {
+        console.warn("Points fetch failed, using fallback 0.");
+        setPoints(0);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   const goBack = () => {
-    // Prefer popping to the previous screen; if user landed here directly, go to profile.
-    // @ts-ignore canGoBack is available at runtime
+    // @ts-ignore
     if (router.canGoBack?.()) router.back();
     else router.replace("/profile");
   };
@@ -60,7 +80,7 @@ export default function Wallet() {
 
   return (
     <View style={{ flex: 1, backgroundColor: BG }}>
-      {/* Header row below the GoGreen badge */}
+      {/* Header row */}
       <View
         style={{
           paddingHorizontal: 12,
@@ -74,9 +94,8 @@ export default function Wallet() {
         <Pressable
           onPress={goBack}
           hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
           style={{ padding: 8 }}
+          accessibilityLabel="Go back"
         >
           <Ionicons name="chevron-back" size={26} color={INK} />
         </Pressable>
@@ -84,8 +103,6 @@ export default function Wallet() {
         <Pressable
           onPress={openRedeem}
           hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel="Open Redeem"
           style={{ padding: 8, marginRight: 6 }}
         >
           <Text style={{ color: MUTED, textDecorationLine: "underline", fontSize: 14 }}>
@@ -94,12 +111,19 @@ export default function Wallet() {
         </Pressable>
       </View>
 
-      {/* Coins section */}
-      <View style={{ alignItems: "center", marginTop: 12 }}>
-        <Ionicons name="cash-outline" size={64} color={INK} />
-        <Text style={{ color: MUTED, fontSize: 16, marginTop: 8 }}>Coins</Text>
-        {/* If you track a balance later, render it here */}
-        {/* <Text style={{ color: INK, fontSize: 28, fontWeight: "800", marginTop: 6 }}>25</Text> */}
+      {/* Coins row */}
+      <View style={{ marginTop: 12, paddingHorizontal: 20, flexDirection: "row", alignItems: "center" }}>
+        <Ionicons name="cash-outline" size={36} color={INK} />
+        <Text style={{ color: MUTED, fontSize: 16, marginLeft: 10 }}>Coins</Text>
+        <View style={{ marginLeft: 12, flexDirection: "row", alignItems: "center" }}>
+          {loading ? (
+            <ActivityIndicator size="small" color={INK} />
+          ) : (
+            <Text style={{ color: INK, fontSize: 24, fontWeight: "800" }}>
+              {points ?? 0}
+            </Text>
+          )}
+        </View>
       </View>
 
       {/* Divider + Transactions header */}
@@ -129,7 +153,6 @@ export default function Wallet() {
             No transactions yet.
           </Text>
         }
-        // Prevent content from being hidden under the tab bar
         contentContainerStyle={{ paddingBottom: 88 }}
       />
     </View>
