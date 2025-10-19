@@ -10,7 +10,9 @@ import {
 } from "react-native";
 import { User } from "../auth/User";
 
+// Handles sign in and sign up
 export default function UserScreen() {
+  // UI state
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -19,11 +21,13 @@ export default function UserScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async () => {
+    // Ensure we got in put we wanted
     if (!email || !pw) {
       Alert.alert("Missing info", "Please enter both email and password");
       return;
     }
 
+    // The sign in/signout button ui
     setLoading(true);
 
     try {
@@ -36,11 +40,11 @@ export default function UserScreen() {
         pts: mode === "signup" ? 100 : 0,
         coupon: [],
       });
+      // See if everything send ok
+      //  console.log("Sending userData:", userData.toJSON());
 
-        console.log("Sending userData:", userData.toJSON());
 
-
-      // Backend base URL (your Mac’s IP)
+      // Backend base URL......... two route here
       const baseURL = "http://10.0.0.75:5002";
       const url =
         mode === "signin"
@@ -56,6 +60,7 @@ export default function UserScreen() {
         body: JSON.stringify(userData.toJSON()),
       });
 
+      // debug here well we technically didn't add pw variable to send to server gg
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(`Server error: ${errText}`);
@@ -63,7 +68,12 @@ export default function UserScreen() {
 
       const result = await res.json();
       console.log("Server response:", result);
+      
+      // Create global user variable
+      User.current = new User(result.user);
+      console.log("Login in user saved: ", User.current);
 
+      // ensure we login successfully
       Alert.alert(
         "Success",
         `${mode === "signin" ? "Welcome back" : "Account created"}: ${
@@ -80,6 +90,7 @@ export default function UserScreen() {
     }
   };
 
+  // Style
   return (
     <View style={styles.container}>
       <Text style={styles.title}>

@@ -2,13 +2,13 @@ import React, { memo, useEffect, useState } from "react";
 import { View, Text, Pressable, FlatList, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { User } from "../auth/User";
+import { useFocusEffect } from "@react-navigation/native";
 
 const BG = "#F2E6B8";
 const INK = "#0F172A";
 const MUTED = "#6B7280";
 const DIVIDER = "#D4D4D4";
-
-const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
 
 type Txn = { id: string; title: string; amount: number; date: string };
 
@@ -27,22 +27,17 @@ export default function Wallet() {
   const [points, setPoints] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Load points from backend JSON
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/me`);
-        if (!res.ok) throw new Error("Failed to fetch points");
-        const data = await res.json();
-        setPoints(typeof data.points === "number" ? data.points : 0);
-      } catch (e) {
-        console.warn("Points fetch failed, using fallback 0.");
-        setPoints(0);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+
+useFocusEffect(
+  React.useCallback(() => {
+    if (User.current) {
+      setPoints(User.current.pts);
+      setLoading(false);
+    } else {
+      router.push("/loginp");
+    }
+  }, [])
+);
 
   const goBack = () => {
     // @ts-ignore

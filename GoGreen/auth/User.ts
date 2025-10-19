@@ -1,5 +1,14 @@
 // A simple data model class that can be used across your backend
 export class User {
+  static current: User | null = null;
+
+  pts: number;
+  coupon: string[];
+  name: string;
+  email: string;
+  pw: string;
+  username: string;
+  
   constructor({ pts = 0, coupon = [], name = "", email = "", pw = "", username = "" } = {}) {
     this.pts = pts;          // number of points
     this.coupon = coupon;    // array of coupon IDs or values
@@ -9,12 +18,11 @@ export class User {
     this.username = username;// public username / handle
   }
 
-  // Example helper methods
-  addPoints(amount) {
+  addPoints(amount: number) {
     this.pts += amount;
   }
 
-  addCoupon(code) {
+  addCoupon(code: string) {
     this.coupon.push(code);
   }
 

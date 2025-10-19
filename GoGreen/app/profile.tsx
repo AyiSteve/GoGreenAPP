@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { User } from "../auth/User";
 
 const BG = "#F2E6B8";
 const INK = "#0F172A";
@@ -13,7 +14,15 @@ export default function Profile() {
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => setUsername(null), []); // placeholder
+useEffect(() => {
+    if (User.current) {
+      console.log("Loaded current user:", User.current);
+      setUsername(User.current.username || User.current.name || "Guest");
+    } else {
+      router.push("/loginp"); 
+    }
+    setLoading(false);
+  }, []);
 
   const Divider = () => (
     <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 18 }} />

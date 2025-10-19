@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { User } from '../auth/User'
 
 export default function CameraScreen() {
   // Permission + camera 
@@ -51,7 +52,7 @@ useEffect(() => {
       // Parse the Ai's json output
 const json = await res.json();
 
-// THE json format amazon give e kept including '''json and '''
+// THE json format amazon give json that kept including '''json and '''
 const clean = json.result
   .replace(/```json/g, "")  
   .replace(/```/g, "")      
@@ -63,11 +64,15 @@ try {
 } catch (err) {
   //debugg! why is this keep coming to error even I change the format :)
   console.warn("Could not parse JSON:", json.result);
-  parsed = { feedback: clean, Point: "?", FOOTprint: "?" };
+  parsed = { feedback: clean, Point: 0, FOOTprint: 0 };
 }
 
 // Display AI feed back on the screen
 setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed.FOOTprint}`);
+if (User.current) {
+  User.current.addPoints(parsed.Point)
+}
+
     } catch (err) {
       console.error("Upload error:", err);
       setAiResponse("Error connecting to server.");
