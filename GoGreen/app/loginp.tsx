@@ -8,28 +8,53 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
+import { User } from "../auth/User";
 
 export default function UserScreen() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async () => {
     setLoading(true);
-    setTimeout(() => {
+
+    setTimeout(async () => {
       setLoading(false);
 
       // Simulate success (replace with fetch() later)
-      const userData = {
+      const userData = new User({
+        name,
         email,
-        password: pw,
-        action: mode,
-        timestamp: new Date().toISOString(),
-      };
+        pw,
+        username: username || email.split("@")[0],
+        pts: mode === "signup" ? 100:0,
+        coupon: [],
+      });
 
-      console.log("🟢 Sending to server:", JSON.stringify(userData, null, 2));
-      Alert.alert("✅ Success", `${mode === "signin" ? "Logged in" : "Signed up"} as ${email}`);
+  try {
+        const res = await fetch("http://10.0.0.75:5002/user/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData.toJSON()),
+        });
+
+        if (!res.ok) throw new Error("Failed to send to server");
+
+        Alert.alert(
+          "✅ Success",
+          `${mode === "signin" ? "Welcome back" : "Account created"}: ${
+            userData.username
+          }`
+        );
+
+        console.log("📤 Sent to server:", userData.toJSON());
+      } catch (err) {
+        console.error("❌ Server error:", err);
+        Alert.alert("Error", "Could not reach server");
+      }
     }, 1000);
   };
 
