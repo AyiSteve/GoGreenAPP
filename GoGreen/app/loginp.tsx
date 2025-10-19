@@ -35,7 +35,7 @@ export default function UserScreen() {
       });
 
   try {
-        const res = await fetch("http://10.0.0.75:5002/user/signup", {
+        const res = await fetch("http://10.0.0.75:5002", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData.toJSON()),
