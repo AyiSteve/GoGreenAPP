@@ -15,7 +15,7 @@ useEffect(() => {
 
   const interval = setInterval(() => {
     if (!isCapturing) takePicture(); // only take picture if not already busy
-  }, 5000); // every 10 seconds
+  }, 10000); // every 10 seconds
 
   return () => clearInterval(interval); // cleanup on unmount
 }, [permission, isCapturing]);
@@ -25,8 +25,6 @@ useEffect(() => {
     setIsCapturing(true);
 
     const result = await cameraRef.current.takePictureAsync();
-
-      await cameraRef.current.resumePreview();
 
     setPhoto(result.uri);
 
@@ -39,7 +37,7 @@ useEffect(() => {
     } as any);
 
     try {
-      const res = await fetch("http://10.19.174.90:5001/analyze", {
+      const res = await fetch("http://10.0.0.75:5001/analyze", {
         method: "POST",
         body: data,
         headers: { "Content-Type": "multipart/form-data" },
