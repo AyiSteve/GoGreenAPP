@@ -1,16 +1,33 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, Pressable, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
-export default function RedeemScreen() {
+const BG = "#F2E6B8";
+const INK = "#0F172A";
+const MUTED = "#6B7280";
+
+export default function Redeem() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🎁 Redeem</Text>
-      <Text style={styles.subtitle}>Exchange your eco-points for rewards!</Text>
+    <View style={{ flex: 1, backgroundColor: BG, padding: 20 }}>
+      {/* Back */}
+      <Pressable onPress={() => router.back()} hitSlop={10}>
+        <Ionicons name="chevron-back" size={28} color={INK} />
+      </Pressable>
+
+      <Text style={{ fontSize: 24, fontWeight: "700", color: INK, marginTop: 20 }}>Redeem Rewards</Text>
+      <Text style={{ color: MUTED, marginTop: 8 }}>Choose an item below to redeem your eco-points:</Text>
+
+      {/* Example reward */}
+      <Pressable
+        onPress={() => Alert.alert("Redeemed!", "You redeemed a coffee coupon ☕")}
+        style={{ marginTop: 24, backgroundColor: "#fff", borderRadius: 12, padding: 16, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 4 }}
+      >
+        <Text style={{ fontSize: 18, fontWeight: "500", color: INK }}>Coffee Coupon</Text>
+        <Text style={{ color: MUTED, marginTop: 4 }}>Cost: 10 coins</Text>
+      </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 10 },
-  subtitle: { fontSize: 16, color: '#555' },
-});
