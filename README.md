@@ -1,45 +1,110 @@
 # GoGreenAPP
 
-#After clone pls do 'npm install' and run with 'npx expo start'
-#The react native's base is built with expo go
+After clone pls do 'npm install' and run with 'npx expo start'
+The react native's base is built with expo go
 
-#DO 'AWS configure' to log in so you can access to your model and change the region in side the file of backend/aiaigent.js
+DO 'AWS configure' to log in so you can access to your model and change the region in side the file of backend/aiaigent.js + backend/datalibrary.js
 
+
+
+⸻
 
 Inspiration
 
-GoGreen was inspired by Pokemon Go. We attended an environmental science lecture and tell us a lot about protecting our planet. We also recognized that many students face hardships that make it difficult to live sustainably, so we wanted to create something that makes “going green” easier, more engaging, and rewarding for everyone.
+GoGreen was inspired by Pokemon Go.
+We attended an environmental science lecture that taught us about protecting our planet.
+We also recognized that many students face hardships that make it difficult to live sustainably,
+so we wanted to create something that makes “going green” easier, more engaging, and rewarding for everyone.
 
-What it does
+⸻
 
-GoGreen recognizes real-world actions that help the environment such as recycling, turning off unused lights, or biking instead of driving. It rewards users with Green Points, which can later be redeemed for prizes in different stores. The app also gives gentle reminders and positive feedback when it detects non-green actions, while showing users how much carbon emission reduction they’ve contributed.
+What It Does
 
-Some main feature including: *BEDROCK HTTP CALL: * With NOVA PRO model, our application aim to give user real time feedback! Just point your camera toward your point of view, it'll be able to lecture you about the nature and environment. In addition, rewarding you for green action! There is more fun fact awaiting to be discover.
+GoGreen recognizes real-world actions that help the environment such as:
+	•	Recycling
+	•	Turning off unused lights
+	•	Biking instead of driving
 
-*AMAZON S3: * Your profile will be saved safely in the S3 from amazon web services. Access them by entering your username+password correctly OR create an account to get your adventure begin!
+It rewards users with Green Points, which can later be redeemed for prizes in different stores.
+The app also gives gentle reminders and positive feedback when it detects non-green actions,
+while showing users how much carbon emission reduction they’ve contributed.
 
-DEVELOPMENT
+⸻
 
-GoGreen is a mobile app built using React Native with Expo as the framework. Our backend deals with AWS Bedrock for AI-driven analysis (Nova Pro) to identify if user perform green-action and giving some positive feedback+story and Amazon S3 as a cloud service to handle user data (user data is stored as a JSON format). Both Bedrock http call and s3 is hosted in server where our frontend can fetch or send information directly.
+Main Features
 
-In addition, we used AI as a tool to help us strengthen the parts that we are not so confidents at, like fixing problems when we are doing front-end designs.
+BEDROCK HTTP CALL (Nova Pro Model)
 
-Challenges we ran into
+With the NOVA PRO model, our application gives users real-time feedback.
+Just point your camera toward your surroundings — it will lecture you about nature and the environment.
+In addition, it rewards you for green actions with fun facts and educational insights.
 
-We encountered multiple challenges during development, especially with debugging code, configuring APIs, and implementing the AI model which we have to curve the way we approaches to our solution. At first instead of amazon s3, we tend to use aws cognito to help the login+sign up however, we can't get our program communicating with the amazon cognito service (We're guessing the react native create by expo don't support the way we try to connect); to not hurt more time and decided to do an old fashion way of storing profile information as a JSON and send it to amazon S3.
+AMAZON S3
 
-Took a long time trying to communicate with the model from bedrock. Luckily, we find a great reference and example code to link with the model using http call provided by the amazon in google+just need to host a server and do a fetch and catch. In addition, the model ain't returning the valid json file at all time so our frontend would sometimes crash due to that; so we had a portion of code that'll handle the error and print raw output.
+Your profile is safely stored on Amazon S3, a cloud service.
+Access it by entering your correct username and password,
+or create a new account to start your green adventure.
 
-It's all our first time using react native; so it took us a long time to set it up but luckily EXPO is easy to use for setting up the react native + We used Chatgpt to help us in the coding and understanding how frontend work in the framework and typescript.
+⸻
 
-Accomplishments that we're proud of
+Development
 
-We’re proud of building a working demo app that successfully recognizes eco-friendly actions using AI.
+GoGreen is a mobile app built using React Native with Expo as the framework.
+Our backend integrates with:
+	•	AWS Bedrock (Nova Pro) for AI-driven image analysis
+	•	Amazon S3 as a cloud service to handle user data (stored as JSON)
 
-What we learned
+Both the Bedrock HTTP call and S3 services are hosted on a local Express server,
+allowing the frontend to send and receive information directly.
 
-We learned how to structure large-scale app projects, integrate AI and APIs, and collaborate effectively as a team. This experience strengthened our problem-solving skills and our understanding of how technology can create social and environmental impact.
+We also used AI tools (like ChatGPT) to help us debug, refine frontend design,
+and understand the React Native + TypeScript ecosystem.
 
-What's next for GoGreen
+⸻
 
-Our next goal is to bring GoGreen to wearable devices like AR glasses, so users can automatically detect green actions. We also aim to expand partnerships with environmental organizations which allow Green Points to directly fund community efforts. Lastly, GoGreen can be set as a community driven platform that helps reduce carbon footprints and empowers people, especially students and young people to take part in fighting global climate change.
+Challenges We Ran Into
+
+We faced multiple challenges during development:
+	•	Debugging and configuring API connections
+	•	Communicating with AWS services (especially Bedrock and Cognito)
+	•	Handling invalid JSON outputs from the AI model (which caused frontend crashes)
+
+Initially, we tried to use AWS Cognito for authentication,
+but React Native (Expo) had compatibility issues with the SDK.
+So, we switched to a simpler method — storing user profiles as JSON in Amazon S3.
+
+It took time to figure out how to make Bedrock’s HTTP call work properly.
+Thankfully, we found great reference examples from AWS documentation.
+We also added error-handling code to safely process malformed AI responses.
+
+As first-time React Native developers, setting up the environment took patience —
+but Expo made it much easier, and ChatGPT helped us quickly learn the workflow.
+
+⸻
+
+Accomplishments We’re Proud Of
+
+We’re proud of building a working demo app that successfully:
+	•	Recognizes eco-friendly actions using AI
+	•	Rewards users for positive environmental behavior
+	•	Provides real-time, engaging feedback with fun facts
+
+⸻
+
+What We Learned
+
+We learned:
+	•	How to structure large-scale app projects
+	•	How to integrate AI models and cloud APIs
+	•	How to collaborate effectively as a team
+
+This project strengthened our problem-solving skills
+and our understanding of how technology can drive environmental impact.
+
+⸻
+
+What’s Next for GoGreen
+	•	Bring GoGreen to wearable devices (like AR glasses) for automatic detection of green actions
+	•	Partner with environmental organizations so Green Points can directly fund real-world initiatives
+	•	Evolve GoGreen into a community-driven platform that empowers people—especially students—
+to reduce carbon footprints and fight global climate change
