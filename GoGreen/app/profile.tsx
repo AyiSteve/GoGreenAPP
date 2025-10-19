@@ -1,16 +1,70 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
-export default function ProfileScreen() {
+const BG = "#F2E6B8";
+const INK = "#0F172A";
+const MUTED = "#9CA3AF";
+const DIVIDER = "#D4D4D4";
+
+export default function Profile() {
+  const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Frontend-only for now; plug in backend later if you want
+  useEffect(() => {
+    setUsername(null); // shows "Guest"
+  }, []);
+
+  const Divider = () => (
+    <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 18 }} />
+  );
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>👤 Profile</Text>
-      <Text style={styles.subtitle}>View your recycling stats and progress.</Text>
-    </View>
+    <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}>
+      {/* Avatar + username */}
+      <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24 }}>
+        <View style={{ width: 88, height: 88, borderRadius: 44, borderWidth: 2, borderColor: INK, alignItems: "center", justifyContent: "center" }}>
+          <Ionicons name="aperture-outline" size={40} color={INK} />
+        </View>
+        <View style={{ marginLeft: 24 }}>
+          <Text style={{ fontSize: 16, color: MUTED, marginBottom: 6 }}>username</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color={INK} />
+          ) : (
+            <Text style={{ fontSize: 18, color: INK, fontWeight: "600" }}>{username ?? "Guest"}</Text>
+          )}
+        </View>
+      </View>
+
+      <View style={{ height: 24 }} />
+      <Divider />
+      <View style={{ height: 56 }} />
+
+      {/* Wallet → /wallet */}
+      <Pressable
+        onPress={() => router.push("/wallet")}
+        style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 16 }}
+        hitSlop={10}
+      >
+        <Ionicons name="wallet-outline" size={48} color={INK} />
+        <Text style={{ marginLeft: 12, fontSize: 18, color: INK }}>Wallet</Text>
+      </Pressable>
+
+      <View style={{ height: 24 }} />
+      <Divider />
+
+      {/* Settings → (for now reloads profile; switch to /settings later if you add it) */}
+      <Pressable
+        onPress={() => router.push("/profile")}
+        style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 24 }}
+        hitSlop={10}
+      >
+        <Ionicons name="settings-outline" size={48} color={INK} />
+        <Text style={{ marginLeft: 12, fontSize: 18, color: INK }}>Settings</Text>
+      </Pressable>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 10 },
-  subtitle: { fontSize: 16, color: '#555' },
-});

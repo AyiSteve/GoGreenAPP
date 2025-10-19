@@ -1,49 +1,30 @@
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from "expo-router";
+import GoGreenHeader from "../components/GoGreenHeader";
+import MyCameraTabBar from "../components/MyCameraTabBar";
 
-export default function TabLayout() {
+const COLORS = { bg: "#F2E6B8", pill: "#8ED168" };
+
+export default function RootTabs() {
   return (
     <Tabs
       initialRouteName="camera"
       screenOptions={{
-        headerShown: true,
-        tabBarActiveTintColor: '#1DB954',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopWidth: 0.5,
-          borderTopColor: '#ddd',
-          paddingBottom: 5,
-        },
+        header: () => (
+          <GoGreenHeader title="GoGreen" colors={{ pill: COLORS.pill, bg: COLORS.bg }} />
+        ),
+        // Use our custom bottom bar (this removes the default triangles)
+        tabBar: (props) => <MyCameraTabBar {...props} />,
+        tabBarShowLabel: false,
+        sceneStyle: { backgroundColor: COLORS.bg },
       }}
     >
-      <Tabs.Screen
-        name="camera"
-        options={{
-          title: 'Camera',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="camera" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="redeem"
-        options={{
-          title: 'Redeem',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="gift" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} />
-          ),
-        }}
-      />
+      {/* Only two tabs */}
+      <Tabs.Screen name="camera" options={{ title: "Camera" }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+    
+    {/* Hidden, still navigable */}
+    <Tabs.Screen name="wallet" options={{ href: null }} />
+    <Tabs.Screen name="redeem" options={{ href: null }} />
     </Tabs>
   );
 }
