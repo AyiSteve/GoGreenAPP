@@ -1,5 +1,6 @@
+// components/GoGreenHeader.tsx
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Platform, StatusBar } from "react-native";
 
 export default function GoGreenHeader({
   title = "GoGreen",
@@ -12,20 +13,29 @@ export default function GoGreenHeader({
     <View
       style={{
         backgroundColor: colors.bg,
-        paddingTop: 40,   // lowered a bit per your request
-        paddingBottom: 12,
+        paddingTop:
+          Platform.OS === "ios"
+            ? 60 // a little lower for iPhones with a notch
+            : StatusBar.currentHeight
+            ? StatusBar.currentHeight + 20 // Android adjusts to status bar height
+            : 40,
+        paddingBottom: 16, // extra bottom padding to space below logo
         alignItems: "center",
       }}
     >
       <View
         style={{
           backgroundColor: colors.pill,
-          paddingHorizontal: 18,
-          paddingVertical: 8,
-          borderRadius: 10,
+          paddingHorizontal: 22,
+          paddingVertical: 10,
+          borderRadius: 12,
+          shadowColor: "#000",
+          shadowOpacity: 0.15,
+          shadowRadius: 3,
+          elevation: 4,
         }}
       >
-        <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>{title}</Text>
+        <Text style={{ color: "#fff", fontWeight: "700", fontSize: 18 }}>{title}</Text>
       </View>
     </View>
   );

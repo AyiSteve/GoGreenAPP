@@ -1,30 +1,44 @@
+// app/_layout.tsx
+import React from "react";
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import GoGreenHeader from "../components/GoGreenHeader";
-import MyCameraTabBar from "../components/MyCameraTabBar";
-
-const COLORS = { bg: "#F2E6B8", pill: "#8ED168" };
 
 export default function RootTabs() {
   return (
     <Tabs
       initialRouteName="camera"
       screenOptions={{
-        header: () => (
-          <GoGreenHeader title="GoGreen" colors={{ pill: COLORS.pill, bg: COLORS.bg }} />
-        ),
-        // Use our custom bottom bar (this removes the default triangles)
-        tabBar: (props) => <MyCameraTabBar {...props} />,
-        tabBarShowLabel: false,
-        sceneStyle: { backgroundColor: COLORS.bg },
+        header: () => <GoGreenHeader />,
+        tabBarActiveTintColor: "#16A34A",
+        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarStyle: { backgroundColor: "#fff" },
+        sceneStyle: { backgroundColor: "#F2E6B8" },
       }}
     >
-      {/* Only two tabs */}
-      <Tabs.Screen name="camera" options={{ title: "Camera" }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
-    
-    {/* Hidden, still navigable */}
-    <Tabs.Screen name="wallet" options={{ href: null }} />
-    <Tabs.Screen name="redeem" options={{ href: null }} />
+      <Tabs.Screen
+        name="camera"
+        options={{
+          title: "Camera",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="camera" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* Hidden pages */}
+      <Tabs.Screen name="wallet" options={{ href: null }} />
+      <Tabs.Screen name="redeem" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   );
 }

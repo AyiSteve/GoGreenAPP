@@ -13,10 +13,7 @@ export default function Profile() {
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Frontend-only for now; plug in backend later if you want
-  useEffect(() => {
-    setUsername(null); // shows "Guest"
-  }, []);
+  useEffect(() => setUsername(null), []); // placeholder
 
   const Divider = () => (
     <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 18 }} />
@@ -24,7 +21,7 @@ export default function Profile() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}>
-      {/* Avatar + username */}
+      {/* avatar + username */}
       <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24 }}>
         <View style={{ width: 88, height: 88, borderRadius: 44, borderWidth: 2, borderColor: INK, alignItems: "center", justifyContent: "center" }}>
           <Ionicons name="aperture-outline" size={40} color={INK} />
@@ -47,7 +44,6 @@ export default function Profile() {
       <Pressable
         onPress={() => router.push("/wallet")}
         style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 16 }}
-        hitSlop={10}
       >
         <Ionicons name="wallet-outline" size={48} color={INK} />
         <Text style={{ marginLeft: 12, fontSize: 18, color: INK }}>Wallet</Text>
@@ -56,9 +52,9 @@ export default function Profile() {
       <View style={{ height: 24 }} />
       <Divider />
 
-      {/* Settings → (for now reloads profile; switch to /settings later if you add it) */}
+      {/* Settings */}
       <Pressable
-        onPress={() => router.push("/profile")}
+        onPress={() => router.push("/settings")}  // was /profile
         style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 24 }}
         hitSlop={10}
       >
