@@ -43,12 +43,12 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
 
     res.json({ result: answer });
   } catch (err) {
-    console.error("❌ Error invoking Nova model:", err);
+    console.error("Error invoking Nova model:", err);
     res.status(500).json({ error: String(err) });
   }
 });
 
-app.listen(5001, () => console.log("🚀 Server running on http://localhost:5001"));
+app.listen(5001, () => console.log("Server running on http://localhost:5001"));
 
 
 

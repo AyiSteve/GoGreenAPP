@@ -1,5 +1,4 @@
 import express from "express";
-import fs from "fs";
 import cors from "cors";
 import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 
@@ -7,13 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Define the port (default to 5002)
+// ✅ Use port 5002 and bind to all network interfaces
 const PORT = process.env.PORT || 5002;
+const HOST = "0.0.0.0"; // Allows external devices (like phones) to connect
 
 // 🔹 AWS S3 configuration
-const REGION = "us-west-2";            // AWS region
+const REGION = "us-east-1";            // your AWS region
 const BUCKET_NAME = "gogreenprofile";  // your S3 bucket name
-const FILE_KEY = "users.json";         // the file storing user data
+const FILE_KEY = "users.json";         // file storing user data
 
 const s3 = new S3Client({ region: REGION });
 
@@ -26,8 +26,8 @@ async function loadUsers() {
     const body = await res.Body.transformToString();
     return JSON.parse(body);
   } catch (err) {
-    console.warn("⚠️ Could not load users.json from S3 (may not exist yet).");
-    return []; // return empty list if file not found
+    console.warn("Could not load users.json from S3 (creating new one).");
+    return [];
   }
 }
 
@@ -47,13 +47,14 @@ async function saveUsers(users) {
    🔸 SIGN-UP: Save new user to S3
    ====================================================== */
 app.post("/user/signup", async (req, res) => {
-  const { email, pw, name, username } = req.body;
-  if (!email || !pw)
+    console.log("Sign Up gotten", req.body);
+  const { email, coupon, name, username , pw} = req.body;
+  if (!email || !pw) {
     return res.status(400).json({ error: "Email and password required" });
+  }
 
   const users = await loadUsers();
 
-  // Check if user already exists
   if (users.some((u) => u.email === email)) {
     return res.status(400).json({ error: "User already exists" });
   }
@@ -62,8 +63,8 @@ app.post("/user/signup", async (req, res) => {
   users.push(newUser);
   await saveUsers(users);
 
-  console.log("🆕 New user added:", newUser.email);
-  res.json({ message: "✅ Account created successfully", user: newUser });
+  console.log("New user added:", newUser.email);
+  res.json({ message: "Account created successfully", user: newUser });
 });
 
 /* ======================================================
@@ -71,23 +72,25 @@ app.post("/user/signup", async (req, res) => {
    ====================================================== */
 app.post("/user/signin", async (req, res) => {
   const { email, pw } = req.body;
-  if (!email || !pw)
+  if (!email || !pw) {
     return res.status(400).json({ error: "Email and password required" });
+  }
 
   const users = await loadUsers();
   const user = users.find((u) => u.email === email && u.pw === pw);
 
   if (!user) {
+    console.log("Invalid login attempt:", email);
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
-  console.log("👤 User logged in:", email);
-  res.json({ message: "✅ Login successful", user });
+  console.log("User logged in:", email);
+  res.json({ message: "Login successful", user });
 });
 
 /* ======================================================
    🚀 Start Server
    ====================================================== */
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+});

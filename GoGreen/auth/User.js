@@ -25,7 +25,8 @@ export class User {
       coupon: this.coupon,
       name: this.name,
       email: this.email,
-      username: this.username
+      username: this.username,
+      pw: this.pw
       // purposely omit pw for safety
     };
   }

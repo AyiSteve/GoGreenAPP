@@ -19,43 +19,65 @@ export default function UserScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async () => {
+    if (!email || !pw) {
+      Alert.alert("Missing info", "Please enter both email and password");
+      return;
+    }
+
     setLoading(true);
 
-    setTimeout(async () => {
-      setLoading(false);
-
-      // Simulate success (replace with fetch() later)
+    try {
+      // Build user object
       const userData = new User({
         name,
         email,
         pw,
         username: username || email.split("@")[0],
-        pts: mode === "signup" ? 100:0,
+        pts: mode === "signup" ? 100 : 0,
         coupon: [],
       });
 
-  try {
-        const res = await fetch("http://10.0.0.75:5002", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData.toJSON()),
-        });
+        console.log("Sending userData:", userData.toJSON());
 
-        if (!res.ok) throw new Error("Failed to send to server");
 
-        Alert.alert(
-          "✅ Success",
-          `${mode === "signin" ? "Welcome back" : "Account created"}: ${
-            userData.username
-          }`
-        );
+      // ⚙️ Backend base URL (your Mac’s IP)
+      const baseURL = "http://10.0.0.75:5002";
+      const url =
+        mode === "signin"
+          ? `${baseURL}/user/signin`
+          : `${baseURL}/user/signup`;
 
-        console.log("📤 Sent to server:", userData.toJSON());
-      } catch (err) {
-        console.error("❌ Server error:", err);
-        Alert.alert("Error", "Could not reach server");
+      console.log("📡 Sending request to:", url);
+
+      // 🔹 Send data to backend
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData.toJSON()),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Server error: ${errText}`);
       }
-    }, 1000);
+
+      const result = await res.json();
+      console.log("Server response:", result);
+
+      Alert.alert(
+        "Success",
+        `${mode === "signin" ? "Welcome back" : "Account created"}: ${
+          result.user?.username || userData.username
+        }`
+      );
+    } catch (err: any) {
+      console.error("Connection error:", err.message);
+      
+      Alert.alert("Network Error", "Unable to connect to server. Please check your Wi-Fi.");
+      
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
