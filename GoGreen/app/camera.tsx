@@ -3,32 +3,35 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 export default function CameraScreen() {
+  // Permission + camera 
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
-  const [aiResponse, setAiResponse] = useState<string | null>(null); // ✅ Added this line
+
+  // Component
+  const [aiResponse, setAiResponse] = useState<string | null>(null); 
   const cameraRef = useRef<CameraView>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
 
-    const [isCapturing, setIsCapturing] = useState(false);
-
+  // Can't accomplish wanting the ai to talk whenever needed, just to test do 2 second for now and get respond by taking picture
 useEffect(() => {
   if (!permission?.granted) return;
 
   const interval = setInterval(() => {
-    if (!isCapturing) takePicture(); // only take picture if not already busy
-  }, 10000); // every 10 seconds
+    if (!isCapturing) takePicture(); // only take picture if not already busy or there will be error
+  }, 2000); 
 
   return () => clearInterval(interval); // cleanup on unmount
 }, [permission, isCapturing]);
 
+  //Take picture and send it to the backend and then display Ai's json response on scnree
   const takePicture = async () => {
-    if (!cameraRef.current || isCapturing) return; // 🧠 Skip if busy
-    setIsCapturing(true);
+    if (!cameraRef.current || isCapturing) return; //  Skip if busy
+    setIsCapturing(true); // say it's busy
 
     const result = await cameraRef.current.takePictureAsync();
-
     setPhoto(result.uri);
 
-
+    // Multipart form-data for the server
     const data = new FormData();
     data.append("file", {
       uri: result.uri,
@@ -37,6 +40,7 @@ useEffect(() => {
     } as any);
 
     try {
+      //send image to backend server
       const res = await fetch("http://10.0.0.75:5001/analyze", {
         method: "POST",
         body: data,
@@ -44,7 +48,7 @@ useEffect(() => {
       });
 
 
-
+      // Parse the Ai's json output
 const json = await res.json();
 
 // THE json format amazon give e kept including '''json and '''
@@ -57,10 +61,12 @@ let parsed;
 try {
   parsed = JSON.parse(clean);
 } catch (err) {
-  console.warn("⚠️ Could not parse JSON:", json.result);
+  //debugg! why is this keep coming to error even I change the format :)
+  console.warn("Could not parse JSON:", json.result);
   parsed = { feedback: clean, Point: "?", FOOTprint: "?" };
 }
 
+// Display AI feed back on the screen
 setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed.FOOTprint}`);
     } catch (err) {
       console.error("Upload error:", err);
@@ -71,6 +77,7 @@ setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed
     }
   };
 
+  // Some UI logic
   if (!permission?.granted) {
     return (
       <View style={styles.center}>
@@ -97,19 +104,10 @@ setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed
   );
 }
 
+// Style
 const styles = StyleSheet.create({
   container: { flex: 1 },
   camera: { flex: 1 },
-  capture: {
-    position: "absolute",
-    bottom: 50,
-    alignSelf: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 40,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.5)",
-  },
   captureText: {
     fontSize: 28,
     color: "#fff",

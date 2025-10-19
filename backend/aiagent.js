@@ -1,18 +1,25 @@
+//I overcome the hardship with this amazing AWS SDK for javascript: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/bedrock-runtime/command/InvokeModelCommand/
+
 import express from "express";
 import multer from "multer";
 import fs from "fs";
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 
+//This is an express app
 const app = express();
-const upload = multer({ dest: "uploads/" }); // temp folder for images
+const upload = multer({ dest: "uploads/" });  //We want a temporarily store of the image just in case
 const client = new BedrockRuntimeClient({ region: "us-west-2" });
 
+//Techinically, we'll be hosting a server which fetch an image where we'll return a json format
 app.post("/analyze", upload.single("file"), async (req, res) => {
   try {
     const imagePath = req.file.path;
+    // convert image for transmission
     const imageBytes = fs.readFileSync(imagePath);
     const base64Image = imageBytes.toString("base64");
 
+    // using the noval pro model, we'll be requesting from https to get responds
+    //this is the body
     const requestBody = {
       messages: [
         {
@@ -25,25 +32,26 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
       ],
       inferenceConfig: { maxTokens: 100 },
     };
-
+    // model input
     const input = {
       body: new TextEncoder().encode(JSON.stringify(requestBody)),
       contentType: "application/json",
       accept: "application/json",
       modelId: "arn:aws:bedrock:us-west-2:508881055253:inference-profile/us.amazon.nova-pro-v1:0",
     };
-
+    // invoke the model
     const command = new InvokeModelCommand(input);
     const response = await client.send(command);
-
+    //decode the output
     const decoded = new TextDecoder().decode(response.body);
     const answer = JSON.parse(decoded).output.message.content[0].text;
 
-    fs.unlinkSync(imagePath); // clean up temp file
-
+    fs.unlinkSync(imagePath); 
+    // we'll return: {'Point': 15, 'FOOTprint': 20, 'feedback': “DO you know? Recycling a washed plastic bottle save the environment more”}
     res.json({ result: answer });
   } catch (err) {
-    console.error("Error invoking Nova model:", err);
+    // debug
+    console.error("Error invoking model:", err);
     res.status(500).json({ error: String(err) });
   }
 });

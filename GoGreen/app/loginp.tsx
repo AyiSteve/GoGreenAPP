@@ -40,16 +40,16 @@ export default function UserScreen() {
         console.log("Sending userData:", userData.toJSON());
 
 
-      // ⚙️ Backend base URL (your Mac’s IP)
+      // Backend base URL (your Mac’s IP)
       const baseURL = "http://10.0.0.75:5002";
       const url =
         mode === "signin"
           ? `${baseURL}/user/signin`
           : `${baseURL}/user/signup`;
 
-      console.log("📡 Sending request to:", url);
+      console.log("Sending request to:", url);
 
-      // 🔹 Send data to backend
+      // Send data to backend
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

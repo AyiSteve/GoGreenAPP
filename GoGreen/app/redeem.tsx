@@ -11,7 +11,6 @@ const MUTED = "#6B7280";
 export default function Redeem() {
   const router = useRouter();
 
-  // Always go to Wallet (don’t rely on history)
   const goBackToWallet = () => {
     router.replace("/wallet");
   };
