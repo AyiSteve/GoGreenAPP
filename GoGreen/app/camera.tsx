@@ -8,14 +8,28 @@ export default function CameraScreen() {
   const [aiResponse, setAiResponse] = useState<string | null>(null); // ✅ Added this line
   const cameraRef = useRef<CameraView>(null);
 
-  useEffect(() => {
-    if (!permission) requestPermission();
-  }, [permission]);
+    const [isCapturing, setIsCapturing] = useState(false);
+
+useEffect(() => {
+  if (!permission?.granted) return;
+
+  const interval = setInterval(() => {
+    if (!isCapturing) takePicture(); // only take picture if not already busy
+  }, 5000); // every 10 seconds
+
+  return () => clearInterval(interval); // cleanup on unmount
+}, [permission, isCapturing]);
 
   const takePicture = async () => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current || isCapturing) return; // 🧠 Skip if busy
+    setIsCapturing(true);
+
     const result = await cameraRef.current.takePictureAsync();
+
+      await cameraRef.current.resumePreview();
+
     setPhoto(result.uri);
+
 
     const data = new FormData();
     data.append("file", {
@@ -32,12 +46,30 @@ export default function CameraScreen() {
       });
 
 
+
 const json = await res.json();
-const parsed = JSON.parse(json.result);
+
+// THE json format amazon give e kept including '''json and '''
+const clean = json.result
+  .replace(/```json/g, "")  
+  .replace(/```/g, "")      
+  .trim();
+
+let parsed;
+try {
+  parsed = JSON.parse(clean);
+} catch (err) {
+  console.warn("⚠️ Could not parse JSON:", json.result);
+  parsed = { feedback: clean, Point: "?", FOOTprint: "?" };
+}
+
 setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed.FOOTprint}`);
     } catch (err) {
       console.error("Upload error:", err);
       setAiResponse("Error connecting to server.");
+    }finally {
+        // Bruh I don't want camera to be too busy 
+        setIsCapturing(false);
     }
   };
 
@@ -63,11 +95,6 @@ setAiResponse(`${parsed.feedback}\nPoints: ${parsed.Point} | Footprint: ${parsed
         </View>
       )}
 
-      <TouchableOpacity onPress={takePicture} style={styles.capture}>
-        <Text style={styles.captureText}>📸</Text>
-      </TouchableOpacity>
-
-      {photo && <Image source={{ uri: photo }} style={styles.preview} />}
     </View>
   );
 }
@@ -88,14 +115,6 @@ const styles = StyleSheet.create({
   captureText: {
     fontSize: 28,
     color: "#fff",
-  },
-  preview: {
-    width: 120,
-    height: 180,
-    borderRadius: 10,
-    position: "absolute",
-    bottom: 150,
-    alignSelf: "center",
   },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   aiResponseContainer: {

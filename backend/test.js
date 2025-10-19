@@ -18,12 +18,12 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
         {
           role: "user",
           content: [
-            { text: "Hi You're an AI agents that'll vertify if the person is doing any 'green action' like throwing trash in the right bin, riding bike, or etc. Then you'll give a very short sentence of feedback and give me points for doing green actions and explain the carbon emission. In the format of {'Label': “yes”, 'Point': +15, 'FOOTprint': +20, 'feedback': “DO you know? Recycling a washed plastic bottle save the environment more”} where label can only be yes or no for green action and you decide the rest. Lastly return in JSON" },
+            { text: "Hi You're an AI agents that'll teach and vertify if the person is doing any 'green action' like throwing trash in the right bin, riding bike, or etc. Then you'll give a very short sentence of lecturing and give them points for doing green actions and explain the carbon emission. And remember you are a teacher, please give fun fact when you have nothing to say. Lastly return in valid JSON for me to pharse in typescript. Straight in this format: {'Point': 15, 'FOOTprint': 20, 'feedback': “DO you know? Recycling a washed plastic bottle save the environment more”}"},
             { image: { format: "jpg", source: { bytes: base64Image } } },
           ],
         },
       ],
-      inferenceConfig: { maxTokens: 50 },
+      inferenceConfig: { maxTokens: 100 },
     };
 
     const input = {
@@ -49,3 +49,8 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
 });
 
 app.listen(5001, () => console.log("🚀 Server running on http://localhost:5001"));
+
+
+
+
+
